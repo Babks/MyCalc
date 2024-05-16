@@ -2,8 +2,6 @@ package com.example.mycalc;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.text.BoringLayout;
-import android.text.Editable;
 import android.view.View;
 import android.widget.EditText;
 
