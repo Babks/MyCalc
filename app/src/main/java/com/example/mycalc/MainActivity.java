@@ -17,7 +17,9 @@ public class MainActivity extends AppCompatActivity {
     String newNumb;
     String oldNumb;
     String lastNumb;
-    String operator;
+    String operator = "";
+    String numb;
+
     Double result = 0.0;
 
     EditText field;
@@ -41,11 +43,11 @@ public class MainActivity extends AppCompatActivity {
             isDot = false;
             isRes = false;
         }
-        if (isFirstNull){
+        if (isFirstNull & view.getId() != R.id.buttReverseSign){
             field.setText("");
             isFirstNull = false;
         }
-        String numb = field.getText().toString();
+        numb = field.getText().toString();
         if (view.getId() == R.id.butt0){
             field.setText(numb + "0");
         } else if (view.getId() == R.id.butt1) {
@@ -72,10 +74,10 @@ public class MainActivity extends AppCompatActivity {
                 field.setText("0.");
             }
             isDot = true;
-        } else if (view.getId() == R.id.buttReverseSign & isReverseNumb){
+        } else if (view.getId() == R.id.buttReverseSign & isReverseNumb & !field.getText().toString().equals("0") & !field.getText().toString().equals("0.")){
             field.setText(numb.substring(1));
             isReverseNumb = false;
-        } else if (view.getId() == R.id.buttReverseSign){
+        } else if (view.getId() == R.id.buttReverseSign & !field.getText().toString().equals("0") & !field.getText().toString().equals("0.")){
             field.setText("-" + numb);
             isReverseNumb = true;
         }
@@ -110,22 +112,31 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("SetTextI18n")
     public void clckRes(View view) {
         newNumb = field.getText().toString();
-        if (operator.equals("+")) {
-            result = Double.parseDouble(oldNumb) + Double.parseDouble(newNumb);
-        } else if (operator.equals("-")) {
-            result = Double.parseDouble(oldNumb) - Double.parseDouble(newNumb);
-        } else if (operator.equals("/")) {
-            result = Double.parseDouble(oldNumb) / Double.parseDouble(newNumb);
-        } else if (operator.equals("1/x")) {
-            result = 1 / Double.parseDouble(newNumb);
-        } else if (operator.equals("*")) {
-            result = Double.parseDouble(oldNumb) * Double.parseDouble(newNumb);
-        } else if (operator.equals("√")) {
-            result = Math.sqrt(Double.parseDouble(oldNumb));
-        } else if (operator.equals("**2")) {
-            result = Math.pow(Double.parseDouble(oldNumb), 2);
-        } else if (operator.equals("**k")) {
-            result = Math.pow(Double.parseDouble(oldNumb), Double.parseDouble(newNumb));
+        switch (operator) {
+            case "+":
+                result = Double.parseDouble(oldNumb) + Double.parseDouble(newNumb);
+                break;
+            case "-":
+                result = Double.parseDouble(oldNumb) - Double.parseDouble(newNumb);
+                break;
+            case "/":
+                result = Double.parseDouble(oldNumb) / Double.parseDouble(newNumb);
+                break;
+            case "1/x":
+                result = 1 / Double.parseDouble(newNumb);
+                break;
+            case "*":
+                result = Double.parseDouble(oldNumb) * Double.parseDouble(newNumb);
+                break;
+            case "√":
+                result = Math.sqrt(Double.parseDouble(oldNumb));
+                break;
+            case "**2":
+                result = Math.pow(Double.parseDouble(oldNumb), 2);
+                break;
+            case "**k":
+                result = Math.pow(Double.parseDouble(oldNumb), Double.parseDouble(newNumb));
+                break;
         }
         field.setText(result.toString());
         isRes = true;
@@ -150,6 +161,38 @@ public class MainActivity extends AppCompatActivity {
             newNumb = "";
             isFirstNull = true;
             isDot = false;
+        }
+
+    }
+
+    @SuppressLint("SetTextI18n")
+    public void clckPrecent(View view) {
+        if (operator.isEmpty()){
+            String numb = field.getText().toString();
+            double temp = Double.parseDouble(numb) / 100;
+            field.setText(temp + "");
+            isRes = true;
+        } else {
+            newNumb = field.getText().toString();
+            switch (operator) {
+                case "+":
+                    result = Double.parseDouble(oldNumb) + (Double.parseDouble(oldNumb) / 100 * Double.parseDouble(newNumb));
+                    break;
+                case "-":
+                    result = Double.parseDouble(oldNumb) - (Double.parseDouble(oldNumb) / 100 * Double.parseDouble(newNumb));
+                    break;
+                case "/":
+                    result = Double.parseDouble(oldNumb) / (Double.parseDouble(oldNumb) / 100 * Double.parseDouble(newNumb));
+                    break;
+                case "*":
+                    result = Double.parseDouble(oldNumb) * (Double.parseDouble(oldNumb) / 100 * Double.parseDouble(newNumb));
+                    break;
+                case "**k":
+                    result = Math.pow(Double.parseDouble(oldNumb), Double.parseDouble(oldNumb) / 100 * Double.parseDouble(newNumb));
+                    break;
+            }
+            field.setText(result.toString());
+            isRes = true;
         }
 
     }
