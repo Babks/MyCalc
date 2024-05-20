@@ -1,9 +1,11 @@
 package com.example.mycalc;
 
 import android.annotation.SuppressLint;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,6 +15,8 @@ public class MainActivity extends AppCompatActivity {
     Boolean isRes = false;
     Boolean isDot = false;
     Boolean isReverseNumb = false;
+    Boolean isFieldZero = true;
+    Boolean isDevideZero = false;
 
     String newNumb;
     String oldNumb;
@@ -24,16 +28,21 @@ public class MainActivity extends AppCompatActivity {
 
     EditText field;
 
+    MediaPlayer buttSound;
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         field = findViewById(R.id.Field);
+        buttSound = MediaPlayer.create(this, R.raw.buttsound);
     }
 
     @SuppressLint("SetTextI18n")
+
     public void clckNumb(View view) {
+        buttSound.start();
         if (isRes){
             field.setText("0");
             operator = "";
@@ -42,14 +51,18 @@ public class MainActivity extends AppCompatActivity {
             isFirstNull = true;
             isDot = false;
             isRes = false;
+            isFieldZero = true;
         }
         if (isFirstNull & view.getId() != R.id.buttReverseSign){
             field.setText("");
             isFirstNull = false;
         }
+        if (isFieldZero & view.getId() != R.id.butt0){
+            isFieldZero = false;
+        }
         numb = field.getText().toString();
         if (view.getId() == R.id.butt0){
-            field.setText(numb + "0");
+            if (isFieldZero) {field.setText("0"); isFirstNull = true;} else {field.setText(numb + "0");}
         } else if (view.getId() == R.id.butt1) {
             field.setText(numb + "1");
         } else if (view.getId() == R.id.butt2) {
@@ -85,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void mathAction(View view) {
+        buttSound.start();
         isFirstNull = true;
         isRes = false;
         isDot = false;
@@ -111,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("SetTextI18n")
     public void clckRes(View view) {
+        buttSound.start();
         newNumb = field.getText().toString();
         switch (operator) {
             case "+":
@@ -120,7 +135,12 @@ public class MainActivity extends AppCompatActivity {
                 result = Double.parseDouble(oldNumb) - Double.parseDouble(newNumb);
                 break;
             case "/":
-                result = Double.parseDouble(oldNumb) / Double.parseDouble(newNumb);
+                if (Double.parseDouble(newNumb) == 0){
+                    isDevideZero = true;
+                    result = Double.parseDouble(oldNumb) / Double.parseDouble(newNumb);
+                } else {
+                    result = Double.parseDouble(oldNumb) / Double.parseDouble(newNumb);
+                }
                 break;
             case "1/x":
                 result = 1 / Double.parseDouble(newNumb);
@@ -138,17 +158,25 @@ public class MainActivity extends AppCompatActivity {
                 result = Math.pow(Double.parseDouble(oldNumb), Double.parseDouble(newNumb));
                 break;
         }
-        field.setText(result.toString());
+        if (isDevideZero){
+            field.setText(result.toString());
+            Toast.makeText(MainActivity.this, "На ноль делить нельзя", Toast.LENGTH_SHORT).show();
+            isDevideZero = false;
+        } else {
+            field.setText(result.toString());
+        }
         isRes = true;
 
     }
 
     public void clckClear(View view) {
+        buttSound.start();
         if (view.getId() == R.id.buttCE){
             lastNumb = field.getText().toString();
             field.setText("0");
             isFirstNull = true;
             isDot = false;
+            isFieldZero = true;
             if (lastNumb.equals(oldNumb)){
                 oldNumb = "";
             } else if (lastNumb.equals(newNumb)){
@@ -161,12 +189,14 @@ public class MainActivity extends AppCompatActivity {
             newNumb = "";
             isFirstNull = true;
             isDot = false;
+            isFieldZero = true;
         }
 
     }
 
     @SuppressLint("SetTextI18n")
     public void clckPrecent(View view) {
+        buttSound.start();
         if (operator.isEmpty()){
             String numb = field.getText().toString();
             double temp = Double.parseDouble(numb) / 100;
